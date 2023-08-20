@@ -50,7 +50,15 @@
 //      By: Robert S. Rau
 // Changes: Camera's camera connector depth changed from 3mm to 2.6. Main wiring channel divided into two parts, USB end made smaller to allow for a step for the two haves to mate against.
 //
+// Updated: 1/1/2023
+//    Rev.: 0.09
+//      By: Robert S. Rau
+// Changes: Started mods for ArduCam 16MP
 //
+// Updated: 1/4/2023
+//    Rev.: 0.10
+//      By: Robert S. Rau
+// Changes: Made more room for ArduCam 16MP camera
 //
 //  ToDo list
 // Add channel for tie-wrap to hold the thing together
@@ -79,19 +87,20 @@
 //
 //
 // Overall circle/sphere definition
-$fn=60;
+$fn=90;
 
 // USER PARAMETERS
 // Here you set up which side of the clam shell you want to render/print, size of your body tube, and such
 // for the left side, set CageLeftSide to true, for the right side, set CageLeftSide to false.
 OldPyFly = true;   // This removes plastic around the new mounting holes and the old PyFly reset switch.
-CageLeftSide = false;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
+CageLeftSide = true;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
 
 HDMIUsed = true;   // make opening for mating connector
 
 //MntCylinderDia = 38.1;    //  38mm rocket motor tube
 //MntCylinderDia = 52.65;    //  Wildman coupler tube
-MntCylinderDia = 54.6;    //  Wileman body tube
+//MntCylinderDia = 54.6;    //  Wildman body tube
+MntCylinderDia = 39.1;    //  Estes BT-
 //MntCylinderDia = 75.78;   //  2.6in rocket body tube
 //MntCylinderDia = 102;     //  4in rocket body tube
 //MntCylinderDia = 29.5;    //  use for minimum rectangle
@@ -490,14 +499,14 @@ module CutCubes() {
 
 CamPCBThickness = 1.1;
 CamSizeY = 33.6;   //extra width so the camera can be removed (camera width is 25mm)
-CamSizeZ = 24.2;
-CamSensorHeight = 5.1;
+CamSizeZ = 24.9;
+CamSensorHeight = 5.1;  // This matches the Pi Camera V2
 CamLensOffsetZ = 2.5;
 CamLensHeight = 4.86;
-CamBotEleHeight=2.3-CamPCBThickness;  // expressed this way since it is the easiest way to measure
+CamBotEleHeight=2.6-CamPCBThickness;  // expressed this way since it is the easiest way to measure
 CamMountingHoleCCZ = 12.5;
 CamMountingHoleCCY = 21;
-CanConnectorZ = 6.6;
+CamConnectorZ = 7.6;  // connector depth from board edge into board
 CamFlexWidth = 18;
 
 
@@ -505,16 +514,16 @@ CamFlexWidth = 18;
 // mounting holes
 module CamHoles() {
          translate([0,CamMountingHoleCCY/2.0,CamMountingHoleCCZ]) {
-             rotate( a=90, v=[0,1,0]) { cylinder(d=1.8,h=100,center=true); }
+             rotate( a=90, v=[0,1,0]) { cylinder(d=1.7,h=100,center=true); }
          }
          translate([0,-CamMountingHoleCCY/2.0,CamMountingHoleCCZ]) {
-             rotate( a=90, v=[0,1,0]) { cylinder(d=1.8,h=100,center=true); }
+             rotate( a=90, v=[0,1,0]) { cylinder(d=1.7,h=100,center=true); }
          }
          translate([0,CamMountingHoleCCY/2.0,0]) {
-             rotate( a=90, v=[0,1,0]) { cylinder(d=1.8,h=100,center=true); }
+             rotate( a=90, v=[0,1,0]) { cylinder(d=1.7,h=100,center=true); }
          }
          translate([0,-CamMountingHoleCCY/2.0,0]) {
-             rotate( a=90, v=[0,1,0]) { cylinder(d=1.8,h=100,center=true); }
+             rotate( a=90, v=[0,1,0]) { cylinder(d=1.7,h=100,center=true); }
          }
     
 }
@@ -535,19 +544,22 @@ module CamPCB() {
 
 // bottom side electronics
 module CamBotEle() {
-     translate([-CamBotEleHeight/2.0,0,CamMountingHoleCCZ/2.0]) {
-        cube([CamBotEleHeight,CamSizeY,7], center=true);
+     translate([-CamBotEleHeight/2.0+0.01,0,CamMountingHoleCCZ/2.0]) {
+        cube([CamBotEleHeight,CamSizeY,9], center=true);
      }
-     translate([-CamBotEleHeight/2.0,0,CamLensOffsetZ]) {
-        cube([CamBotEleHeight,CamMountingHoleCCY-5,CamSizeZ], center=true);
+     translate([-CamBotEleHeight/2.0+0.01,0,CamLensOffsetZ]) {
+        cube([CamBotEleHeight,CamMountingHoleCCY-3,CamSizeZ], center=true);
+     }  
+     translate([-CamBotEleHeight/2.0+0.01,0,CamLensOffsetZ+4]) rotate([45,0,0]) {
+        cube([CamBotEleHeight,21,21], center=true);
      }  
     // connector 
-     translate([-1.5,0,-CamSizeZ/2.0+CamLensOffsetZ+CanConnectorZ/2.0]) {
-        cube([2.6,21,CanConnectorZ], center=true);
+     translate([-1.49,0,-CamSizeZ/2.0+CamLensOffsetZ+CamConnectorZ/2.0]) {
+        cube([4,23.8,CamConnectorZ], center=true);     // connector width changed from 22 to 23.4 for ArduCam 16MP camera
      }   
     // Flex 
      translate([-1.57+50,0,-CamSizeZ/2.0+CamLensOffsetZ-2.9]) {
-        cube([0.4+100,CamFlexWidth,9], center=true);
+        cube([0.4+100,CamFlexWidth+.5,9], center=true);
      }   
   }
     
@@ -603,13 +615,13 @@ module FullCage() {
         if (CamFlip) {
          translate([0,0,-(sqrt(((MntCylinderDia/2)*(MntCylinderDia/2))-16)-CamPCBThickness-CamLensHeight)]) rotate(a=90,v=[0,1,0]) CamPocket();
 // camera flex cable entry
-        translate([-18,0,-50]) cube([4,CamFlexWidth,100], center=true);
+        translate([-18,0,-50]) cube([4,CamFlexWidth+0.5,100], center=true);
         }
         else
         {
          translate([0,0,-(sqrt(((MntCylinderDia/2)*(MntCylinderDia/2))-16)-CamPCBThickness-CamLensHeight)]) rotate(a=180,v=[0,0,1]) rotate(a=90,v=[0,1,0]) CamPocket();
 // camera flex cable entry
-        translate([18,0,-50]) cube([4,CamFlexWidth,100], center=true);
+        translate([18,0,-50]) cube([4,CamFlexWidth+0.5,100], center=true);
         }
         
         // Camera lens allignment notch
