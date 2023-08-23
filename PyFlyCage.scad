@@ -60,6 +60,11 @@
 //      By: Robert S. Rau
 // Changes: Made more room for ArduCam 16MP camera
 //
+// Updated: 8/22/2023
+//    Rev.: 0.11
+//      By: Robert S. Rau
+// Changes: Opened up Deans power connector area so PiFly would slide in eaiser. Expanded PCB thickness, 1.65->1.72
+//
 //  ToDo list
 // Add channel for tie-wrap to hold the thing together
 // Add board supports (slots) and space for analog adapter board
@@ -84,6 +89,23 @@
 //       point down the side of your rocket.
 //
 //
+//
+//
+//Printing
+// Cura settings
+//  Layer Height  0.2mm
+//  Wall thickness 1mm
+//  Infill 15%
+//  Generate Support  Yes
+//  Support structure  Tree
+//  Support Branch angle  40°
+//  Support Overhang Angle  50°
+//  Support Placement  Touching Buildplate
+//  Support pattern  Lines
+//  Support Interface Pattern  Zig Zag
+//  Buildplate Adhesion Type  None
+//  Print left side with camera pointing to side.
+//  
 //
 //
 // Overall circle/sphere definition
@@ -136,7 +158,7 @@ module externalCylinder( diameter, length) {
 //
 //
 // PCB
-PCBThickness = 1.65;
+PCBThickness = 1.72;
 PyFlyZoffset = 0.5;
 
 
@@ -182,7 +204,7 @@ module PyFlyBoardNoHoles() {
         translate([98,15,(PCBThickness + 2.39)]) rotate(a=90, v=[0,1,0]) cylinder(d=17.5,h=(100),    center=false);   //wiring channel 2
     }
     translate([62.5,15,(PCBThickness - 0.1)-3.2]) cube([53,30,4], center=true);               // Space between Zero and PyFly
-    translate([0,-4,(PCBThickness - 0.1)-3.2]) cube([24,12.7,96]);               // Servo connectors
+    translate([0,0,(PCBThickness - 0.1)-4.4]) cube([24,12.7,96]);               // Servo connectors
     translate([-2.54,-4,(PCBThickness - 0.1)-3.2]) cube([2.7,16,96]);               // Dual Servo connector
     if (CageLeftSide)
     {
@@ -217,7 +239,8 @@ module PyFlyBoardNoHoles() {
     translate([99.61, 5.73,PCBThickness+2.3]) cube([5.1,8,7], center=true);  // Interrupt jumpers
     translate([41.4, 5,PCBThickness+12.5+50]) cube([5.4,16,115], center=true);  // Audio connector, P4
     translate([115, 12.7,PCBThickness+2.5]) cube([17,10,200], center=true);  // Deans Power connector
-    translate([115, 16.5,PCBThickness-10]) cube([15,9.5,11], center=true);  // Deans Power connector insertion well
+    translate([115, 18.5,PCBThickness-13.5]) cube([15,9.5,11], center=true);  // Deans Power connector insertion well
+    translate([115, 03,PCBThickness-6]) cube([15,9.5,9], center=true);  // Power supply modification clearance-----remove with new board.
     translate([72.5, 5.3,PCBThickness+0.5]) cube([32,10,4], center=true);  // parts
     hull()
     {
@@ -235,7 +258,7 @@ module PyFlyBoardNoHoles() {
     translate([28.75,17,PCBThickness/2-3]) cube([8.25,29.25-17,6], center=false);  // parts: Q3, R56
     translate([55, 6.5,PCBThickness/2]) cube([21,10,5], center=true);  // parts: PP35, PP23, R6
     translate([40.5, 5.3,PCBThickness/2]) cube([8,10,5], center=true);  // parts: D2
-    translate([15.4, 5,PCBThickness/2]) cube([30.6,10,4], center=true);  // parts: U15, U10
+    translate([15.4, 5,PCBThickness/2]) cube([30.6,10,5.5], center=true);  // parts: U15, U10
     translate([122.25, 6.25,PCBThickness/2]) cube([55.5,10,5], center=true);  // parts: C27, C28, R67
     translate([0,3,PyFlyZoffset-3]) cube([19,23,3], center=false);  // parts    GPS LEDs resistors
     translate([114,17,PCBThickness/2-3]) cube([14,29.25-17,6], center=false);  // parts    High side driver
@@ -307,7 +330,7 @@ module ScrewFlats() {
 // PCB size variables
 PiSizeX = 65.4;
 PiSizeY = 30.4;
-PiSizeZ = 1.4;
+PiSizeZ = 1.7;   // new zeros are thicker  8/22/2023
 PiCornerRad = 3.52;
 PiHoleEdge = 3.5;       // Mount holes are 3.5mm from each edge
 PiHoleDia = 2.75;
