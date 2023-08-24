@@ -65,6 +65,11 @@
 //      By: Robert S. Rau
 // Changes: Opened up Deans power connector area so PiFly would slide in eaiser. Expanded PCB thickness, 1.65->1.72
 //
+// Updated: 8/23/2023
+//    Rev.: 0.12
+//      By: Robert S. Rau
+// Changes: Added opening for Pi Zero USB connectors. Increased HDMI connector opening and connector access. Increased PiFly board thickness.
+//
 //  ToDo list
 // Add channel for tie-wrap to hold the thing together
 // Add board supports (slots) and space for analog adapter board
@@ -158,7 +163,7 @@ module externalCylinder( diameter, length) {
 //
 //
 // PCB
-PCBThickness = 1.72;
+PCBThickness = 1.8;  //  PiFly nominal PCB thickness is 1.6mm
 PyFlyZoffset = 0.5;
 
 
@@ -342,10 +347,10 @@ PiSDX = -24.5;          // SD holder
 PiSDY = 1.9;
 
 PiUSBX = 8.9;           // Data (USB)
-PiUSBY = -8;
+PiUSBY = -11;
 
 PiOTGX = 21.5;          // Power (OTG)
-PiOTGY = -8;
+PiOTGY = -11;
 
 PiHDMIX = -20.1;        // HDMI
 PiHDMIY = -6.4;
@@ -366,13 +371,13 @@ PiSDsizeX = 11.5;
 PiSDsizeY = 12.0;
 PiSDsizeZ = 1.3;     // Connector height (may be from point below surface of board (center = Zsize/2.3 )
 
-PiUSBsizeX = 9;     // extra mm needed for little tabs on end of USB connectors
-PiUSBsizeY = 16.0;
-PiUSBsizeZ = 3.8;       // USB connectors have lips that extend higer and lower that the main (center = Zsize/2.3 )
+PiUSBsizeX = 10;     // extra mm needed for little tabs on end of USB connectors
+PiUSBsizeY = 18.0;
+PiUSBsizeZ = 4;       // USB connectors have lips that extend higer and lower that the main (center = Zsize/2.3 )
 
-PiHDMIsizeX = 12.25;
+PiHDMIsizeX = 13;
 PiHDMIsizeY = 26;
-PiHDMIsizeZ = 4;
+PiHDMIsizeZ = 4.3;
 
 PiHDMImcsizeX = 20;
 PiHDMImcsizeY = 100;
@@ -475,9 +480,9 @@ PiComponent(PiSDX,PiSDY,PiSDsizeX,PiSOCsizeY,PiSOCsizeZ,"Silver");   // SD card
 PiComponent(PiHDMIX,PiHDMIY,PiHDMIsizeX,PiHDMIsizeY,PiHDMIsizeZ,"Silver");   // HDMI
 if (HDMIUsed) {        
     //PiComponent(PiHDMImcX,PiHDMImcY,PiHDMImcsizeX,PiHDMImcsizeY,PiHDMImcsizeZ,"Blue");   // HDMI mating connector
-    translate([PiHDMImcX,-PiHDMImcsizeY/2-18,-PiHDMImcsizeZ/2+8])   // USB     
+    translate([PiHDMImcX,-PiHDMImcsizeY/2-16,-PiHDMImcsizeZ/2+18])   //    
 //    translate([PiHDMImcX,PiHDMImcY-PiHDMImcsizeY/2,PiHDMImcsizeZ  + PiHDMImcsizeZ/2.3])   // USB connectors have lips that extend higer and lower that the main connector height
-    cube([PiHDMImcsizeX,PiHDMImcsizeY,PiHDMImcsizeZ], center=true);
+    cube([PiHDMImcsizeX+2,PiHDMImcsizeY,PiHDMImcsizeZ], center=true);
     
     }
 PiComponent(PiUSBX,PiUSBY,PiUSBsizeX,PiUSBsizeY,PiUSBsizeZ,"Silver");   // USB
