@@ -112,17 +112,17 @@
 //  Print left side with camera pointing to side.
 //  
 //
-//
-// Overall circle/sphere definition
-$fn=90;
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // USER PARAMETERS
 // Here you set up which side of the clam shell you want to render/print, size of your body tube, and such
 // for the left side, set CageLeftSide to true, for the right side, set CageLeftSide to false.
-OldPyFly = true;   // This removes plastic around the new mounting holes and the old PyFly reset switch.
-CageLeftSide = true;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CageLeftSide = false;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
+GPSAntennaSupport = false;   //  set to true to surround the GPS antenna with plastic. NOTE: This will change the dielectric constant around the antenna, use thin walls and low fill if set to true.
 
-HDMIUsed = true;   // make opening for mating connector
+HDMIUsed = true;   // make opening for mating HDMI connector to the Raspberry Pi Zero
 
 //MntCylinderDia = 38.1;    //  38mm rocket motor tube
 //MntCylinderDia = 52.65;    //  Wildman coupler tube
@@ -133,7 +133,7 @@ MntCylinderDia = 39.1;    //  Estes BT-
 //MntCylinderDia = 29.5;    //  use for minimum rectangle
 //
 //
-// Do you want to mount the camera on the left side (right side has wire channel)?
+// Do you want to mount the camera on the left side (the right side has wire channel)?
 CameraFeatures = true;
 //
 // This give you two options for camera mounting and video/still requirements. By default, CamFlip=false, the Pi camera produces images with the
@@ -141,13 +141,17 @@ CameraFeatures = true;
 //  get a twist, which uses a bit of cable routing volume. You can set CamFlip to true and have nice flex cable routing but you
 //  need to flip the image in software. raspivid must use the -ro 180 option, and raspistill must use -vf -hf options.
 CamFlip = true;
-
+//
+OldPyFly = true;   // This removes plastic around the new mounting holes and the old PyFly reset switch. Removes plastic for power supply mod.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Overall circle/sphere definition
+$fn=90;
 
 module externalCylinder( diameter, length) {
     rotate( a=90, v=[0,1,0]) {cylinder(h=length, d=diameter, center=true );}
 }
-
-
 
 
 
@@ -163,7 +167,7 @@ module externalCylinder( diameter, length) {
 //
 //
 // PCB
-PCBThickness = 1.8;  //  PiFly nominal PCB thickness is 1.6mm
+PCBThickness = 2.0;  //  PiFly nominal PCB thickness is 1.6mm. Increased. & again on 8/26/2023 (3D print doesn't have a consistent width from end to end.
 PyFlyZoffset = 0.5;
 
 
@@ -209,7 +213,7 @@ module PyFlyBoardNoHoles() {
         translate([98,15,(PCBThickness + 2.39)]) rotate(a=90, v=[0,1,0]) cylinder(d=17.5,h=(100),    center=false);   //wiring channel 2
     }
     translate([62.5,15,(PCBThickness - 0.1)-3.2]) cube([53,30,4], center=true);               // Space between Zero and PyFly
-    translate([0,0,(PCBThickness - 0.1)-4.4]) cube([24,12.7,96]);               // Servo connectors
+    translate([0,-3.1,(PCBThickness - 0.1)-4.4]) cube([24,14.7,96]);               // Servo connectors
     translate([-2.54,-4,(PCBThickness - 0.1)-3.2]) cube([2.7,16,96]);               // Dual Servo connector
     if (CageLeftSide)
     {
@@ -237,16 +241,16 @@ module PyFlyBoardNoHoles() {
         translate([82.73415, 12.37,(PCBThickness - 0.1)+5.5+50]) cube([6.6,10.7,17+100], center=true);  // Tach connector
         translate([82.73415, -10,(PCBThickness - 0.1)+5.5+50]) cube([6.6,10.7,17+100], center=true);  // Tach connector
     }
-    translate([139.25, 40,PCBThickness-7.25]) cube([22.5,57.5,21], center=true);  // High current connector
+    translate([139.25, 40,PCBThickness-7.25]) cube([23.5,57.5,21], center=true);  // High current connector J6    left & right side
     translate([133.1, 2.85-1,PCBThickness+5.5]) cube([19,20,17], center=true);  // Keypad connector
-    translate([138.35, 9.3218,PCBThickness+5.5]) cube([4,12,17], center=true);  // analog connector
+    translate([138.35, 9.3218,PCBThickness+5.5+20]) cube([5,13,57], center=true);  // analog connector J7
     translate([55.734, 11.94,PCBThickness+5.5]) cube([12,14,11], center=true);  // Diff pressure sens
     translate([99.61, 5.73,PCBThickness+2.3]) cube([5.1,8,7], center=true);  // Interrupt jumpers
     translate([41.4, 5,PCBThickness+12.5+50]) cube([5.4,16,115], center=true);  // Audio connector, P4
-    translate([115, 12.7,PCBThickness+2.5]) cube([17,10,200], center=true);  // Deans Power connector
-    translate([115, 18.5,PCBThickness-13.5]) cube([15,9.5,11], center=true);  // Deans Power connector insertion well
+    translate([115, 12.7,PCBThickness+2.5]) cube([17,10,200], center=true);  // Deans Power connector P1
+    translate([113, 18.5,PCBThickness-13.5]) cube([21,9.5,11], center=true);  // Deans Power connector P1, insertion well, long enough to take out a little foot on the end.
     translate([115, 03,PCBThickness-6]) cube([15,9.5,9], center=true);  // Power supply modification clearance-----remove with new board.
-    translate([72.5, 5.3,PCBThickness+0.5]) cube([32,10,4], center=true);  // parts
+    translate([72.5, 5.3,PCBThickness+0.5]) cube([32,10,4], center=true);  // parts - left side
     hull()
     {
         translate([11.8872, 20.3484,PCBThickness-7.2]) cylinder(d=12,h=8, center=true);  // Super capacitor
@@ -254,20 +258,22 @@ module PyFlyBoardNoHoles() {
     }
     if (OldPyFly)
     {
-        translate([19,22,PCBThickness/2-5.5]) cube([7.25,7,5.5], center=false);  // parts: Old PyFly reset button
-        translate([25.5,26,PCBThickness/2])cube([6.5,6.5,6],center=true);
-        translate([111,26,PCBThickness/2])cube([6.5,6.5,6],center=true);
+        translate([18.5,22,PCBThickness/2-5.5]) cube([7.75,7,5.5], center=false);  // parts: Old PyFly reset button, SW1
+        translate([25.5,26,PCBThickness/2])cube([6.5,6.5,6],center=true);    // Microphone U22
+        translate([111,26,PCBThickness/2])cube([6.5,6.5,6],center=true);   // Clearance for R52, R30 et. all (PiFly doesn't support this hole)
 
     }
-    translate([0,17,PCBThickness/2-3]) cube([22.25,29.25-17,6], center=false);  // parts: R40
-    translate([28.75,17,PCBThickness/2-3]) cube([8.25,29.25-17,6], center=false);  // parts: Q3, R56
-    translate([55, 6.5,PCBThickness/2]) cube([21,10,5], center=true);  // parts: PP35, PP23, R6
-    translate([40.5, 5.3,PCBThickness/2]) cube([8,10,5], center=true);  // parts: D2
-    translate([15.4, 5,PCBThickness/2]) cube([30.6,10,5.5], center=true);  // parts: U15, U10
-    translate([122.25, 6.25,PCBThickness/2]) cube([55.5,10,5], center=true);  // parts: C27, C28, R67
-    translate([0,3,PyFlyZoffset-3]) cube([19,23,3], center=false);  // parts    GPS LEDs resistors
+    translate([1.5,17,PCBThickness/2-3]) cube([20.75,29.25-17,6], center=false);  // parts: R40  right side
+    translate([28.75,17,PCBThickness/2-3]) cube([8.25,29.25-17,6], center=false);  // parts: Q3, R56 (PiFly doesn't support this hole) right side
+    translate([55, 6.5,PCBThickness/2]) cube([21,10,5], center=true);  // parts: PP35, PP23, R6   Left side
+    translate([40.5, 5.3,PCBThickness/2]) cube([8,10,5], center=true);  // parts: D2    left side
+    translate([15.4, 5,PCBThickness/2]) cube([30.6,10,5.5], center=true);  // parts: U15, U10     left side
+    translate([122.25, 6.25,PCBThickness/2]) cube([55.5,10,5], center=true);  // parts: C27, C28, R67      left side
+    translate([1.5,3,PyFlyZoffset-3]) cube([17.5,23,3], center=false);  // parts    GPS LEDs resistors      left & right side
+    translate([1,3,PyFlyZoffset-3]) cube([18,8,3], center=false);  // parts   bottom of servo connectors P2, P3, P10     left side
     translate([114,17,PCBThickness/2-3]) cube([14,29.25-17,6], center=false);  // parts    High side driver
-    translate([90.5,17,PCBThickness/2-3]) cube([17.5,29.25-17,6], center=false);  // parts    High side driver control logic & RF**
+    translate([90.5,17,PCBThickness/2]) cube([17.5,29.25-17,3], center=false);  // parts    RF amplifier   right side
+    translate([94.5,17,PCBThickness/2-3]) cube([13.5,29.25-17,3], center=false);  // parts    High side driver control & A/D stuff   right side
     PyFlyLEDCone(4.7,27.686,"Yellow");  // LED
     PyFlyLEDCone(4.7,26.543,"Yellow");  // LED
     PyFlyLEDCone(105.12,2.51,"Yellow");  // LED
@@ -335,7 +341,7 @@ module ScrewFlats() {
 // PCB size variables
 PiSizeX = 65.4;
 PiSizeY = 30.4;
-PiSizeZ = 1.7;   // new zeros are thicker  8/22/2023
+PiSizeZ = 1.8;   // new zeros are thicker  8/22/2023 & again on 8/26/2023
 PiCornerRad = 3.52;
 PiHoleEdge = 3.5;       // Mount holes are 3.5mm from each edge
 PiHoleDia = 2.75;
@@ -676,10 +682,18 @@ module FullCage() {
         translate([-61.5,0.866*(MntCylinderDia-4.3)/2, 0.5*(MntCylinderDia-4.3)/2]) rotate( a=90, v=[0,1,0]) cylinder(d=2.4, h=5.0);
         translate([-61.5,0,(MntCylinderDia+1)/2]) rotate( a=90, v=[0,1,0]) cylinder(d=2.4, h=5.0);
         }
+        translate([49,-15,40]) cube([25,20,64.1], center=true);   // remove "hook" around power connector and room for W1 W2
+        if (CageLeftSide == false) {
+        translate([30,-9,4.6]) rotate([24,0,0]) cube([170,20,10], center=true);   // to make more printable without support (interferes with left side
+             }
         if (CameraFeatures)
         {
 // opening for camera flex cable to wrap around end of Zero, this way the flex won't catch on the ledge.
         translate([26,-3,-9]) cube([23,6,5], center=true);
+        }
+        
+        if (GPSAntennaSupport == false) {
+            translate([-90,-9,4.6])  cube([40,500,500], center=true);   // 
         }
     }
 }
