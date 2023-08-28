@@ -119,10 +119,12 @@
 // for the left side, set CageLeftSide to true, for the right side, set CageLeftSide to false.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CageLeftSide = false;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
+CageLeftSide = true;     // Set this true for one half, false for the other half. Left side has HDMI connector, Right side has backup battery.
 GPSAntennaSupport = false;   //  set to true to surround the GPS antenna with plastic. NOTE: This will change the dielectric constant around the antenna, use thin walls and low fill if set to true.
 
 HDMIUsed = true;   // make opening for mating HDMI connector to the Raspberry Pi Zero
+
+U8LargeAccess = false;  // true to carve out more area around differential pressure sensor, U8
 
 //MntCylinderDia = 38.1;    //  38mm rocket motor tube
 //MntCylinderDia = 52.65;    //  Wildman coupler tube
@@ -141,6 +143,8 @@ CameraFeatures = true;
 //  get a twist, which uses a bit of cable routing volume. You can set CamFlip to true and have nice flex cable routing but you
 //  need to flip the image in software. raspivid must use the -ro 180 option, and raspistill must use -vf -hf options.
 CamFlip = true;
+ExtraDepthForLongerLenses = 2.7;  //  for Arducam 16MP with imx519 autofocus sensor
+//ExtraDepthForLongerLenses = 0;     // for Raspberry Pi camera 2
 //
 OldPyFly = true;   // This removes plastic around the new mounting holes and the old PyFly reset switch. Removes plastic for power supply mod.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +184,7 @@ module PyFlyLEDCone(Xpos,Ypos,Col)    // Places a spot at test pad point, colour
 }
 
 
-module PyFlyButtonCone(Xpos,Ypos,Col)    // Places a spot at test pad point, coloured to show pad function
+module PyFlyButtonCone(Xpos,Ypos,Col)    // Places a spot at test pad point, colored to show pad function
 {
     translate([Xpos,Ypos,PCBThickness/4]) {
         color(Col);
@@ -191,9 +195,11 @@ module PyFlyButtonCone(Xpos,Ypos,Col)    // Places a spot at test pad point, col
 
 
 module PyFlyBoardNoHoles() {
-    translate([-0.25,-0.25,0]) cube([150.5,29.75,PCBThickness]);  //PCB  0.5mm oversize slot
+    translate([-0.25,-0.25,0]) cube([151.1,29.75,PCBThickness]);  //PCB  0.5mm oversize slot
     // new PyFly 2.00 features
+    if (OldPyFly == false){
     translate([-4.24,-0.25,0]) cube([4.01,29.75,PCBThickness]);  //Extra length of version 2.00
+    }
     
             // shape to make card guide champhers
         hull()
@@ -244,17 +250,19 @@ module PyFlyBoardNoHoles() {
     translate([139.25, 40,PCBThickness-7.25]) cube([23.5,57.5,21], center=true);  // High current connector J6    left & right side
     translate([133.1, 2.85-1,PCBThickness+5.5]) cube([19,20,17], center=true);  // Keypad connector
     translate([138.35, 9.3218,PCBThickness+5.5+20]) cube([5,13,57], center=true);  // analog connector J7
-    translate([55.734, 11.94,PCBThickness+5.5]) cube([12,14,11], center=true);  // Diff pressure sens
+    translate([55.734, 11.94,PCBThickness+5.5]) cube([12,14,11], center=true);  // Differential pressure sensor, U8, right side
     translate([99.61, 5.73,PCBThickness+2.3]) cube([5.1,8,7], center=true);  // Interrupt jumpers
     translate([41.4, 5,PCBThickness+12.5+50]) cube([5.4,16,115], center=true);  // Audio connector, P4
     translate([115, 12.7,PCBThickness+2.5]) cube([17,10,200], center=true);  // Deans Power connector P1
     translate([113, 18.5,PCBThickness-13.5]) cube([21,9.5,11], center=true);  // Deans Power connector P1, insertion well, long enough to take out a little foot on the end.
+    if (OldPyFly == true) {
     translate([115, 03,PCBThickness-6]) cube([15,9.5,9], center=true);  // Power supply modification clearance-----remove with new board.
+    }
     translate([72.5, 5.3,PCBThickness+0.5]) cube([32,10,4], center=true);  // parts - left side
     hull()
     {
-        translate([11.8872, 20.3484,PCBThickness-7.2]) cylinder(d=12,h=8, center=true);  // Super capacitor
-        translate([11.8872, 14.3484,PCBThickness-7.2]) cylinder(d=12,h=8, center=true);  // Super capacitor
+        translate([11.8872, 20.3484,PCBThickness-7.2]) cylinder(d=13,h=9, center=true);  // GPS Super capacitor C2
+        translate([11.8872, 14.3484,PCBThickness-7.2]) cylinder(d=13,h=9, center=true);  // GPS Super capacitor C2
     }
     if (OldPyFly)
     {
@@ -298,6 +306,7 @@ module MountingHoles() {
     translate([91.5,3.5,0])cylinder(d=2.743,h=PCBThickness*20.1,center=true);
     translate([25.5,26,0])cylinder(d=2.743,h=PCBThickness*20.1,center=true);
     translate([111,26,0])cylinder(d=2.743,h=PCBThickness*20.1,center=true);
+    translate([158,26,0])cylinder(d=2.743,h=PCBThickness*20.1,center=true);    // mostly for old PiFly since it has no screw holes on this side
 }
 
 
@@ -317,20 +326,8 @@ module ScrewFlats() {
     translate([-62.5,-15,0.5]) translate([91.5,3.5,0])cylinder(d=7,h=50,center=true);
     translate([-62.5,-15,-0.5]) translate([25.5,26,0])cylinder(d=7,h=50,center=true);
     translate([-62.5,-15,-0.5]) translate([111,26,0])cylinder(d=7,h=50,center=true);
+    translate([-62.5,-15,-0.5]) translate([158,26,0])cylinder(d=7,h=50,center=true);   // mostly for old PiFly since it has no screq holes on this side
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -433,8 +430,8 @@ translate([Xpos,Ypos,PiSizeZ/2])
 
 module PiComponent(Xpos,Ypos,Xsize,Ysize,Zsize,Col)    // Makes a block to represent a component on the upper face
 {
-translate([Xpos,Ypos,PiSizeZ  + Zsize/2.3]) color(Col)   // USB connectors have lips that extend higer and lower that the main connector height
-    cube([Xsize,Ysize,Zsize], center=true);
+translate([Xpos,Ypos,PiSizeZ  + Zsize/2.55]) color(Col)   // USB connectors have lips that extend higer and lower that the main connector height
+    cube([Xsize,Ysize,Zsize+0.5], center=true);
 }
 
 module PiLEDCone(Xpos,Ypos,Col)    // Places a spot at test pad point, coloured to show pad function
@@ -532,7 +529,7 @@ module CutCubes() {
 // Camera stuff
 
 CamPCBThickness = 1.1;
-CamSizeY = 33.6;   //extra width so the camera can be removed (camera width is 25mm)
+CamSizeY = 27;   //extra width so the camera can be removed (camera width is 25mm)
 CamSizeZ = 24.9;
 CamSensorHeight = 5.1;  // This matches the Pi Camera V2
 CamLensOffsetZ = 2.5;
@@ -566,7 +563,7 @@ module CamHoles() {
 
 module CamPCB() {
     difference() {
-    translate([CamPCBThickness/2.0+50,0,CamLensOffsetZ]) {
+    translate([CamPCBThickness/2.0+50,0,CamLensOffsetZ+5]) {
         cube([CamPCBThickness+100,CamSizeY,CamSizeZ], center=true);
     }
     CamHoles();
@@ -579,21 +576,26 @@ module CamPCB() {
 // bottom side electronics
 module CamBotEle() {
      translate([-CamBotEleHeight/2.0+0.01,0,CamMountingHoleCCZ/2.0]) {
-        cube([CamBotEleHeight,CamSizeY,9], center=true);
+        cube([CamBotEleHeight,CamSizeY-8,9], center=true);      //  camera component clearance side to side
      }
      translate([-CamBotEleHeight/2.0+0.01,0,CamLensOffsetZ]) {
         cube([CamBotEleHeight,CamMountingHoleCCY-3,CamSizeZ], center=true);
      }  
-     translate([-CamBotEleHeight/2.0+0.01,0,CamLensOffsetZ+4]) rotate([45,0,0]) {
-        cube([CamBotEleHeight,21,21], center=true);
+     translate([-CamBotEleHeight/2.0+0.01,0,CamLensOffsetZ+4]) rotate([0,90,0]) {
+        cylinder(h=CamBotEleHeight,r=11, center=true);    // used to nick away plastic for components close to mounting holes (on the diagonal)
      }  
     // connector 
-     translate([-1.49,0,-CamSizeZ/2.0+CamLensOffsetZ+CamConnectorZ/2.0]) {
-        cube([4,23.8,CamConnectorZ], center=true);     // connector width changed from 22 to 23.4 for ArduCam 16MP camera
+     translate([-1.4,0,-CamSizeZ/2.0+CamLensOffsetZ+CamConnectorZ/2.0]) {
+        cube([2.9,23.8,CamConnectorZ], center=true);     // connector width changed from 22 to 23.4 for ArduCam 16MP camera
      }   
     // Flex 
-     translate([-1.57+50,0,-CamSizeZ/2.0+CamLensOffsetZ-2.9]) {
-        cube([0.4+100,CamFlexWidth+.5,9], center=true);
+     translate([-1.57+50,0,-CamSizeZ/2.0+CamLensOffsetZ-0.9]) {
+        cube([0.4+100,CamFlexWidth+.5,12], center=true);
+         }
+    // Room for Flex fold inside      left side
+     translate([-5,0,-32]) {
+        cube([10,15,25], center=true);    // only as wide as narrower part of flex
+    
      }   
   }
     
@@ -647,8 +649,8 @@ module FullCage() {
         {
         // camera pocket
         if (CamFlip) {
-         translate([0,0,-(sqrt(((MntCylinderDia/2)*(MntCylinderDia/2))-16)-CamPCBThickness-CamLensHeight)]) rotate(a=90,v=[0,1,0]) CamPocket();
-// camera flex cable entry
+         translate([0,0,-(sqrt(((MntCylinderDia/2)*(MntCylinderDia/2))-16)-CamPCBThickness-CamLensHeight)+ExtraDepthForLongerLenses]) rotate(a=90,v=[0,1,0]) CamPocket();
+// camera flex cable entry to inside from camera
         translate([-18,0,-50]) cube([4,CamFlexWidth+0.5,100], center=true);
         }
         else
@@ -695,6 +697,10 @@ module FullCage() {
         if (GPSAntennaSupport == false) {
             translate([-90,-9,4.6])  cube([40,500,500], center=true);   // 
         }
+        if (U8LargeAccess == true) {
+            translate([-62.5,-15,PyFlyZoffset]) translate([62, 10,PCBThickness+7]) cube([37,26,14], center=true);  // Differential pressure sensor, U8, Large access, right side
+        }
+        
     }
 }
 
